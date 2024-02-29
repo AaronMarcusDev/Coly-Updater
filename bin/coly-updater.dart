@@ -5,7 +5,7 @@ void main(List<String> args) async {
   String scriptFolderPath;
   try {
     if (Platform.isWindows) {
-      scriptFolderPath = Platform.resolvedExecutable.replaceAll("coly_updater.exe", '');
+      scriptFolderPath = Platform.resolvedExecutable.replaceAll("coly-updater.exe", '');
     } else {
       scriptFolderPath = Platform.resolvedExecutable.replaceAll("coly-updater", '');
     }
@@ -13,7 +13,6 @@ void main(List<String> args) async {
     print("[ERROR] Could not find Coly :(");
     exit(1);
   }
-
   var link =
       "https://raw.githubusercontent.com/AaronMarcusDev/Coly/main/updater-builds/windows/coly.exe";
 
@@ -31,15 +30,21 @@ void main(List<String> args) async {
   File file;
   try {
     if (Platform.isWindows) {
-      File("$scriptFolderPath/coly.exe").deleteSync();
-      file = File("$scriptFolderPath/coly.exe");
+      var colyExe = File("$scriptFolderPath\\coly.exe");
+      if (await colyExe.exists()) {
+        await colyExe.delete();
+      }
+      file = colyExe;
     } else {
-      File("$scriptFolderPath/coly").deleteSync();
-      file = File("$scriptFolderPath/coly");
+      var coly = File("$scriptFolderPath\\coly");
+      if (await coly.exists()) {
+        await coly.delete();
+      }
+      file = coly;
     }
-    file.writeAsBytes(response.bodyBytes);
+    await file.writeAsBytes(response.bodyBytes);
   } catch (e) {
-    print("[ERROR] Could not replace Coly.");
+    print("[ERROR] Could not replace Coly: ${e.toString()}");
     exit(1);
   }
 
